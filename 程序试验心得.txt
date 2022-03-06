@@ -1,0 +1,220 @@
+【0】编程的基本要求！！！
+             1、关于变量：
+             变量名除了i-n可以使用外，其他字母统统不能使用。
+             i-n只能用来定义整型变量。其他变量名必须用英文单词或者两个英文单词的拼接，要体现具体含义。
+             变量名尽可能小写，常量名全部大写。
+             函数调用和函数定义时变量用不同的名字，定义时从本身的意义、功能出发。
+             2、关于注释：
+             每个所写的函数前要加注释，内容如下：
+//来源：程序设计基础课程作业
+//功能：
+//作者：仇成宇
+//时间：
+//修改记录：
+             尽量多加注释，如果可能，应在每条语句后加注释，说明其作用。
+             3、关于输入输出：
+             输入输出与算法分离。养成到一个阶段一次性输出的习惯。写程序时最后考虑如何输入输出。
+             输出整理成一个函数myLog，争取每次输出都使用它，可以对接口做拓展。
+             4、关于main函数：
+             main函数不做事，做事的部分用函数，main中只负责调用函数和完成最基本的操作。
+             要注意函数的接口能和main对接。
+                
+【1】有关程序的注意事项和心得感悟
+（0）极极极极极关键的问题：
+整数相除会直接取整数部分，所以算小数时一定记得把一个整数变成浮点数！！！！！！
+判断是否相等时用==！！！！！！
+
+（1）每一次调试新的代码之前要右键点击解决方案，选属性，切换到要调试的程序。否则会按原程序执行
+     调试时如果VS上运行无误而OJ上运行错误，注意数组越界的问题，尤其while语句中最后一次的执行是否会导致越界
+
+（2）每个函数都要首先检查入参是否正确（取值范围）。就算没有也必须加上
+                                       /*check input*/
+                                       这是思维的体现。
+（3）拷贝代码合适的字体一般是Courier New。
+
+（4）关于cin中的空格：
+空格、TAB和换行符均会存储为\0，被计算机认为输入结束。输入带空格的一行字符串的办法是：
+方法一：用getline函数配合string，需要用到：（不推荐，因为要用到string，可能用错）
+#include <string>
+string a;//注意a后面没有[]
+getline(cin, a);//表示将输入的一行放在a中（可以有空格）
+while(a[i]!='\0'){}
+方法二：用cin.getline函数：
+char m[20];
+cin.getline(m,n);//表示接收n个字符到m中（可以有空格），最后一个字符为\0
+方法三：用cin.get函数（与cin.getline函数用法一致）
+
+（5）关于打印字符串的地址：
+不论是指定字符串的名字还是指向字符串的指针，都输出的是字符串，这是由于cout 对字符数组做了处理。
+如果要打印字符串的地址，需要将字符串名字或指向字符串的指针强制转换成void型，代码如下：
+char b[3] = { 'u','v','w' };
+cout << (void*)(b) << endl;
+cout << static_cast<void*>(b) << endl;//c++中特有的强制类型转换，语法为static_cast<new_type>(expression)
+
+（6）关于数组
+函数中定义和赋值的数组在返回指针（数组名）后数组会被删除，
+因此在main函数中如果想使用该数组，需要在函数定义数组时加上static,存储在静态存储空间中。代码如下：
+int* prepare() {
+	static int b[10];
+    b[9] = 9;
+    return b;
+}
+也可以用指针存储在堆中。代码如下：
+int *p;
+p = (*int)malloc(M*sizeof(int));
+
+（7）关于大数组的存放
+数组容量超大时需要开栈（否则栈太小存不下），或者用静态变量定义，这样就会存储在静态存储空间中。
+const int M = 5000000;
+static int a[M];
+
+（8）关于从文件中读取数据的空格问题
+可以使用getline函数解决：
+#include <string>
+ifstream input("xxxx");
+getline（input,a);//将一行存入a中
+或者用input（不唯一）.getline：
+ifstream input("xxxx");
+input.getline(a,1000);//将一行的前1000个字符存入a中
+
+（9）一种判断一个正整数是否是2的幂的方法：
+//用位运算判断是否是2的幂
+if ((result & (result - 1)) == 0) {
+	cout<<result<<"是2的幂"<<endl;
+}
+else
+    cout<<result<<"不是2的幂"<<endl;
+
+（10）一种将光标移动到任意位置的不闪屏方法：
+#include <windows.h>
+HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);//这里，获取标准输出设备的句柄，并将其赋给句柄变量handle
+COORD coor = { 0,0 };//这是Windows API的结构体，用来存储光标位置
+/*COORD是Windows API中定义的一种结构，表示一个字符在控制台屏幕上的坐标。其定义为：
+       typedef struct _COORD {
+          SHORT X; // horizontal coordinate
+          SHORT Y; // vertical coordinate
+       } COORD;
+       我们想要光标出现在我们想要的位置，可以使用下面这段代码
+        void gotoxy(HANDLE hOut, int x, int y)//其中x，y是与正常理解相反的，注意区分
+        {
+            COORD pos;
+            pos.X = x;             //横坐标
+            pos.Y = y;            //纵坐标
+            SetConsoleCursorPosition(hOut, pos);//将坐标移动到指定位置
+        }//光标定位函数
+        */
+    /*用该方法刷屏的时候，因为频繁设置光标的位置，因此需要隐藏光标。
+      CONSOLE_CURSOR_INFO：存储光标信息的数据类型，格式如下：
+        typedef struct _CONSOLE_CURSOR_INFO {
+        DWORD dwSize;		// 光标百分比厚度（1~100） 
+        BOOL bVisible;		// 是否可见
+      } CONSOLE_CURSOR_INFO, * PCONSOLE_CURSOR_INFO;
+    */
+CONSOLE_CURSOR_INFO CursorInfo;
+GetConsoleCursorInfo(handle, &CursorInfo);//获取控制台光标信息
+CursorInfo.bVisible = false; //隐藏控制台光标
+SetConsoleCursorInfo(handle, &CursorInfo);//设置控制台光标状态
+
+(11)查找一个字符串中某字符串的位置：
+方法一：利用find()函数
+查找第一次出现的目标字符串示例：
+#include<iostream>
+#include<cstdio>
+using namespace std;
+int main(){
+string s1 = "abcdef";
+string s2 = "de";
+int ans = s1.find(s2) ;   //在S1中查找子串S2
+cout<<ans<<endl;
+system("pause");
+}
+说明：如果查找成功则输出查找到的第一个位置，否则返回-1；
+此外，如果将find(s2)换成find(s2,i)则可以从s1的第i个字符开始查找s2
+方法二：利用strstr(string1,string2)函数
+查找成功返回第一次出现的位置指针，否则返回NULL
+
+（12）字符串分割
+方法一：利用substr函数
+原型：string substr ( size_t pos = 0, size_t n = npos ) const;
+功能：获得长度为npos的子字符串。
+参数说明：pos为起始位置（默认为0），n为期望字符串长度（默认为npos）
+注意：包含pos位
+返回值：子字符串
+#include <iostream>
+#include <string>
+#include <vector>
+//字符串分割函数
+std::vector<std::string> split(std::string str, std::string pattern)
+{
+    std::string::size_type pos;
+    std::vector<std::string> result;
+    str += pattern;//扩展字符串以方便操作
+    int size = str.size();
+    for (int i = 0; i < size; i++)
+    {
+        pos = str.find(pattern, i);
+        if (pos < size)
+        {
+            std::string s = str.substr(i, pos - i);//分割字符串
+            result.push_back(s);
+            i = pos + pattern.size() - 1;
+        }
+    }
+    return result;
+}
+
+(13)创建、初始化和删除以变量为大小的动态二维数组
+创建与初始化：
+int** graph = new int*[N + 1];//创建一个N+1乘N+1大小的二维数组
+for (int i = 0; i < N + 1; i++) {
+  graph[i] = new int[N + 1];
+  for (int j = 0; j < N + 1; j++) {
+    graph[i][j] = 0;
+  }
+}
+删除：
+for (int i = 0; i < N + 1; i++) {
+  delete[] graph[i];
+}
+delete[] graph;
+
+（14）string类型字符串比较
+若两个字符串均为string类型
+则可以用s1.compare(s2)
+若返回值为0，则两者相等。
+还可以可以利用“==”的，相等的话，则表达式的返回值为1，不等为0。
+
+(15)将string类型转换为char*类型
+c_str()函数返回一个指向正规C字符串的指针,内容与本string串相同。
+使用时为string.c_str()
+注意：一定要使用strcpy()函数 等来操作方法c_str()返回的指针
+
+（16）无屏显函数getch（）函数
+#include<conio.h>
+char ch = _getch();//输入一个字符时,无需回车或空格，系统就会赋给ch,但屏幕上无显示
+cout << '[' << ch << ']' << endl;//只有再次cout屏幕上才会显示刚输入的字符
+///利用这一函数可以做到让用户输入后立刻操作而无需回车，且能隐藏用户输入的值
+
+(17)string类型拼接
+有了string 类，我们可以使用”+“ 或者”+=“运算符来直接拼接字符串，非常方便，
+再也不需要使用C语言中的strcat(),strcopy(),malloc()等函数来拼接字符串了，再也不用担心空间不够溢出了。
+#include<string>
+string s3 = s1 + s2 + "haha";
+
+(18)getchar()函数：
+有时getline函数之前需要先消除换行符的影响，用getchar函数，此时需要包含头文件stdio.h
+#include<stdio.h>
+
+（19）有关命令行的常见操作
+dir //查看当前目录下的所有文件
+cd //进入该目录/路径，后面如果是..则返回上一层目录
+del //删除文件，后面如果是*.cpp则删除所有该目录的cpp文件
+rmdir /s OOP2022//删除OOP2022目录以及目录下的所有文件
+g++ s.cpp -o sp //编译链接s.cpp并命名为sp.exe
+g++ s.cpp -c -o sp.o//只编译不链接
+.\test//运行test.exe
+mingw32-make//运行该目录下的makefile
+mingw32-make clean//运行该目录下makefile中的clean任务
+g++ helloworld.cpp -o test.out -g//生成一个可调试的文件test.out
+gdb test.out//进入调试模式
+
